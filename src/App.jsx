@@ -1,5 +1,9 @@
 import "./App.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from "react-router-dom";
 import Home from "./components/Home/Home.jsx";
 import Layout from "./components/Layout/Layout.jsx";
 import Login from "./components/Login/Login.jsx";
@@ -16,46 +20,115 @@ import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.jsx";
 import ProductDetails from "./components/ProductDetails/ProductDetails.jsx";
 import CartContextProvider from "./context/CartContext.jsx";
 import { Toaster } from "react-hot-toast";
-import Checkout from './components/CheckOut/CheckOut';
-import Wishlist from "./components/WishList/WishList.jsx";
+import Checkout from "./components/CheckOut/CheckOut";
+// import Wishlist from "./components/WishList/WishList.jsx";
 
 const routers = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
     children: [
-      { path: "login", element: <Login /> },
-      { path: "register", element: <Register /> }, // هنا غيرنها بدل اندكس بقت ريجيستر
-      { path: "home", element: <ProtectedRoute><Home /></ProtectedRoute> },
-      { path: "brands", element: <ProtectedRoute><Brands /></ProtectedRoute>  },
-      { path: "cart", element: <ProtectedRoute><Cart /></ProtectedRoute>  },
-      { path: "categories", element: <ProtectedRoute><Categories /></ProtectedRoute>  },
+      {
+        index: true,
+        element: localStorage.getItem("userToken") ? (
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        ) : (
+          <Navigate to="/login" />
+        ),
+      },
+      {
+        path: "login",
+        element: localStorage.getItem("userToken") ? (
+          <Navigate to="/home" />
+        ) : (
+          <Login />
+        ),
+      },
+      {
+        path: "register",
+        element: localStorage.getItem("userToken") ? (
+          <Navigate to="/home" />
+        ) : (
+          <Register />
+        ),
+      },
+      {
+        path: "home",
+        element: (
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "brands",
+        element: (
+          <ProtectedRoute>
+            <Brands />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "cart",
+        element: (
+          <ProtectedRoute>
+            <Cart />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "categories",
+        element: (
+          <ProtectedRoute>
+            <Categories />
+          </ProtectedRoute>
+        ),
+      },
       { path: "navbar", element: <Navbar /> },
       { path: "*", element: <Notfound /> },
-      { path: "products", element: <ProtectedRoute><Products /></ProtectedRoute> },
+      {
+        path: "products",
+        element: (
+          <ProtectedRoute>
+            <Products />
+          </ProtectedRoute>
+        ),
+      },
       { path: "Footer", element: <Footer /> },
-      { path: "productdetails/:id", element: <ProtectedRoute><ProductDetails /></ProtectedRoute> },
-      { path: "CheckOut", element: <ProtectedRoute><Checkout /></ProtectedRoute> },
-      { path: "WishList", element: <ProtectedRoute><Wishlist /></ProtectedRoute> },
-    ]
-     
-  }
-])
+      {
+        path: "productdetails/:id",
+        element: (
+          <ProtectedRoute>
+            <ProductDetails />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "CheckOut",
+        element: (
+          <ProtectedRoute>
+            <Checkout />
+          </ProtectedRoute>
+        ),
+      },
+      // { path: "WishList", element: <ProtectedRoute><Wishlist /></ProtectedRoute> },
+    ],
+  },
+]);
 
 function App() {
-
-
-  return  <>
- <CartContextProvider>
-
- <UserContextProvider>
-      <RouterProvider router={routers}></RouterProvider>
-      <Toaster/>
-      </UserContextProvider>
-
- </CartContextProvider>
+  return (
+    <>
+      <CartContextProvider>
+        <UserContextProvider>
+          <RouterProvider router={routers}></RouterProvider>
+          <Toaster />
+        </UserContextProvider>
+      </CartContextProvider>
     </>
-  
+  );
 }
 
 export default App;
