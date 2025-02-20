@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+:root {
+  --main-color: #0aad0a;
+  --light-color: #f0f3f2;
+  --shadow: rgba(145, 158, 171, 0.2) 0px 2px 4px -1px, rgba(145, 158, 171, 0.14) 0px 4px 5px 0px;
+  --font-family: 'Encode sans Expanded', sans-serif;
+  --rating-color: #ffc908;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--main-color);
+}
+
+.rating-color {
+  color: var(--rating-color);
+}
+
+.product:hover {
+  box-shadow: var(--shadow);
+  transform: scale(1.05);
+  transition: transform 0.3s ease-in-out;
+}
+
+.product .btn {
+  transition: transform 1s, opacity 1s;
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+.product:hover .btn {
+  opacity: 1;
+  transform: translateY(0%);
+}
+
+.font-sm {
+  font-size: 14px;
+}
+
+.text-main {
+  color: var(--main-color);
+}
+
+.text-main-light {
+  color: var(--light-color);
+}
+
+.bg-main {
+  background-color: var(--main-color) !important;
+}
+
+.bg-main-light {
+  background-color: var(--light-color) !important;
+}
+
+
+.slick-slider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+}
+
+.slick-slide img {
+  margin: auto;
+  max-width: 100%;
+  border-radius: 10px;
+}
+
+.slick-prev, .slick-next {
+  background-color: #4c4681;
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slick-prev:hover, .slick-next:hover {
+  background-color: var(--main-color) !important;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  background-color: grey;
+  color: white;
+}
+
+button:hover {
+  border-color: var(--main-color);
+  background-color: var(--main-color);
+  color: white;
+  transform: scale(1.05);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: white;
+    background-color: greenyellow;
+  }
+
+  a:hover {
+    color: green;
+  }
+
+  button {
+    background-color: greenyellow;
+  }
+}
