@@ -1,83 +1,119 @@
-import React, { useContext, useEffect, useState } from 'react';
-import axios from 'axios';
-import { Link } from "react-router-dom";
-import Loading from '../Loading/Loading';
-import { WishlistContext } from '../../context/WishlistContext';
+import React, { useState, useContext, useEffect } from "react";
+import { Heart, Trash, Search } from "lucide-react";
+import { CartContext } from "../../context/CartContext";
+import axios from "axios";
 import toast from "react-hot-toast";
 
-export default function Wishlist() {
-  const [wishlist, setWishlist] = useState([]);
-  const [filteredWishlist, setFilteredWishlist] = useState([]);
-  const [loading, setLoading] = useState(true);
+const WishList = () => {
   const [searchTerm, setSearchTerm] = useState("");
-
-  let { getWishlist, removeProductFromWishlist } = useContext(WishlistContext);
-
-  async function fetchWishlist() {
-    const data = await getWishlist();
-    setWishlist(data);
-    setFilteredWishlist(data);
-    setLoading(false);
-  }
-
-  async function handleRemoveFromWishlist(productId) {
-    await removeProductFromWishlist(productId);
-    toast.success("تمت إزالة المنتج من قائمة الأمنيات ❌");
-    fetchWishlist();
-  }
+  const [wishlist, setWishlist] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingProduct, setLoadingProduct] = useState(null);
+  const { addProductToCart } = useContext(CartContext);
 
   useEffect(() => {
     fetchWishlist();
   }, []);
 
-  useEffect(() => {
-    const filtered = wishlist.filter(product =>
-      product.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredWishlist(filtered);
-  }, [searchTerm, wishlist]);
+  async function fetchWishlist() {
+    try {
+      const token = localStorage.getItem("userToken");
+      const headers = { token };
+      const { data } = await axios.get("https://ecommerce.routemisr.com/api/v1/wishlist", { headers });
+      setWishlist(data.data || []);
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
+      toast.error("حدث خطأ أثناء جلب عناصر قائمة الأمنيات ❌");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function removeFromWishlist(productId) {
+    try {
+      const token = localStorage.getItem("userToken");
+      const headers = { token };
+      await axios.delete(`https://ecommerce.routemisr.com/api/v1/wishlist/${productId}`, { headers });
+
+      // تحديث القائمة بدون إعادة التحميل
+      setWishlist((prevWishlist) => prevWishlist.filter((item) => item._id !== productId));
+
+      toast.success("تم حذف المنتج من قائمة الأمنيات ✅");
+    } catch (error) {
+      console.error("Error removing item from wishlist:", error);
+      toast.error("حدث خطأ أثناء حذف المنتج من قائمة الأمنيات ❌");
+    }
+  }
+
+  async function handleAddToCart(productId) {
+    setLoadingProduct(productId);
+    await addProductToCart(productId);
+    toast.success("تمت إضافة المنتج إلى السلة بنجاح 🛒");
+    setLoadingProduct(null);
+  }
+
+  const filteredItems = wishlist.filter((item) =>
+    item.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <>
-      <div className="container mx-auto py-10">
-        <h2 className="text-3xl font-bold text-center text-green-600 mb-8">Wishlist</h2>
-        <div className="flex justify-center mb-6">
-          <input
-            type="text"
-            placeholder="Search in wishlist..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-2/3 p-3 border rounded-lg shadow-sm bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-        </div>
+    <div className="p-4">
+      {/* 🔍 شريط البحث */}
+      <div className="mb-4 flex items-center gap-2">
+        <Search className="w-5 h-5 text-gray-500" />
+        <input
+          type="text"
+          placeholder="Search your wishlist..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="border p-2 rounded-md w-full"
+        />
       </div>
 
-      {loading ? <Loading /> :
-        <div className="flex flex-wrap py-8 gap-y-4 justify-center">
-          {filteredWishlist.length > 0 ? filteredWishlist.map((product) => (
-            <div key={product.id} className="w-1/6">
-              <div className="products p-2 rounded-lg relative group p-4 bg-white transition-all cursor-pointer 
-                           hover:text-white hover:shadow-lg hover:scale-105">
-                <Link to={`/productdetails/${product.id}`}>
-                  <img src={product.imageCover} className="w-full" alt={product.title} />
-                  <h3 className="text-main">{product.category.name}</h3>
-                  <h3 className="text-xl">{product.title.split(' ', 2).join(' ')}</h3>
-                  <div className="flex justify-between">
-                    <span className='pt-5'>{product.price} EGP</span>
-                    <span> <i className=" pt-5 fas fa-star"></i> {product.ratingsAverage} </span>
+      {/* 🔄 تحميل البيانات */}
+      {loading ? (
+        <p className="text-center text-gray-500">Loading wishlist...</p>
+      ) : filteredItems.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredItems.map((item) => (
+            <Card key={item._id} className="rounded-2xl shadow-md">
+              <CardContent className="p-4">
+                <h3 className="text-xl font-semibold">{item.title}</h3>
+                <p className="text-gray-600">{item.description}</p>
+                <div className="mt-4 flex justify-between items-center">
+                  <span className="text-lg font-bold">{item.price} EGP</span>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => handleAddToCart(item._id)}
+                      disabled={loadingProduct === item._id}
+                      variant="outline"
+                      className={`flex items-center gap-2 ${loadingProduct === item._id ? 'bg-gray-400 cursor-not-allowed' : ''}`}
+                    >
+                      {loadingProduct === item._id ? "جاري الإضافة..." : "Add to Cart"}
+                    </Button>
+                    <Button 
+                      onClick={() => removeFromWishlist(item._id)} 
+                      variant="outline"
+                      className="flex items-center gap-2"
+                    >
+                      <Trash className="w-5 h-5 text-red-500" />
+                      Remove
+                    </Button>
                   </div>
-                </Link>
-                <button
-                  onClick={() => handleRemoveFromWishlist(product.id)}
-                  className="w-full p-4 mt-2 border rounded-lg shadow-sm bg-red-500 text-white hover:bg-red-600 hover:shadow-lg"
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          )) : <p className="text-center text-gray-500">Your wishlist is empty.</p>}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      }
-    </>
+      ) : (
+        <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-4">
+          <Heart className="w-16 h-16 text-gray-400 mb-4" />
+          <h2 className="text-2xl font-semibold mb-2">قائمة الأمنيات فارغة</h2>
+          <p className="text-gray-500">ابدأ بإضافة المنتجات المفضلة لديك هنا.</p>
+        </div>
+      )}
+    </div>
   );
-}
+};
+
+export default WishList;

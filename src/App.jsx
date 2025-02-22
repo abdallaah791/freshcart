@@ -21,7 +21,7 @@ import ProductDetails from "./components/ProductDetails/ProductDetails.jsx";
 import CartContextProvider from "./context/CartContext.jsx";
 import { Toaster } from "react-hot-toast";
 import Checkout from "./components/CheckOut/CheckOut";
-// import Wishlist from "./components/WishList/WishList.jsx";
+import Wishlist from "./components/WishList/WishList.jsx";
 
 const routers = createBrowserRouter([
   {
@@ -113,7 +113,7 @@ const routers = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      // { path: "WishList", element: <ProtectedRoute><Wishlist /></ProtectedRoute> },
+      { path: "WishList", element: <ProtectedRoute><Wishlist /></ProtectedRoute> },
     ],
   },
 ]);
