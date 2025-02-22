@@ -18,12 +18,14 @@ const WishList = () => {
   async function fetchWishlist() {
     try {
       const token = localStorage.getItem("userToken");
-      const headers = { token };
-      const { data } = await axios.get("https://ecommerce.routemisr.com/api/v1/wishlist", { headers });
+      const { data } = await axios.get(
+        "https://ecommerce.routemisr.com/api/v1/wishlist",
+        { headers: { token } }
+      );
       setWishlist(data.data || []);
     } catch (error) {
       console.error("Error fetching wishlist:", error);
-      toast.error("حدث خطأ أثناء جلب عناصر قائمة الأمنيات ❌");
+      toast.error("Failed to fetch wishlist items");
     } finally {
       setLoading(false);
     }
@@ -32,23 +34,21 @@ const WishList = () => {
   async function removeFromWishlist(productId) {
     try {
       const token = localStorage.getItem("userToken");
-      const headers = { token };
-      await axios.delete(`https://ecommerce.routemisr.com/api/v1/wishlist/${productId}`, { headers });
-
-      // تحديث القائمة بدون إعادة التحميل
-      setWishlist((prevWishlist) => prevWishlist.filter((item) => item._id !== productId));
-
-      toast.success("تم حذف المنتج من قائمة الأمنيات ✅");
+      await axios.delete(
+        `https://ecommerce.routemisr.com/api/v1/wishlist/${productId}`,
+        { headers: { token } }
+      );
+      setWishlist((prev) => prev.filter((item) => item._id !== productId));
+      toast.success("Item removed from wishlist");
     } catch (error) {
-      console.error("Error removing item from wishlist:", error);
-      toast.error("حدث خطأ أثناء حذف المنتج من قائمة الأمنيات ❌");
+      toast.error("Failed to remove item from wishlist");
     }
   }
 
   async function handleAddToCart(productId) {
     setLoadingProduct(productId);
     await addProductToCart(productId);
-    toast.success("تمت إضافة المنتج إلى السلة بنجاح 🛒");
+    toast.success("Added to cart successfully");
     setLoadingProduct(null);
   }
 
@@ -57,59 +57,77 @@ const WishList = () => {
   );
 
   return (
-    <div className="p-4">
-      {/* 🔍 شريط البحث */}
-      <div className="mb-4 flex items-center gap-2">
+    <div className="container mx-auto p-4">
+      {/* Search Bar */}
+      <div className="mb-6 flex items-center gap-2 justify-center">
         <Search className="w-5 h-5 text-gray-500" />
         <input
           type="text"
-          placeholder="Search your wishlist..."
+          placeholder="Search wishlist..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="border p-2 rounded-md w-full"
+          className="border p-2 rounded-md w-1/2"
         />
       </div>
 
-      {/* 🔄 تحميل البيانات */}
       {loading ? (
         <p className="text-center text-gray-500">Loading wishlist...</p>
       ) : filteredItems.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredItems.map((item) => (
-            <Card key={item._id} className="rounded-2xl shadow-md">
-              <CardContent className="p-4">
-                <h3 className="text-xl font-semibold">{item.title}</h3>
-                <p className="text-gray-600">{item.description}</p>
-                <div className="mt-4 flex justify-between items-center">
-                  <span className="text-lg font-bold">{item.price} EGP</span>
+            <div
+              key={item._id}
+              className="bg-white rounded-lg shadow-md overflow-hidden"
+            >
+              <img
+                src={item.imageCover}
+                alt={item.title}
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-4">
+                <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+                <p className="text-gray-600 mb-4">
+                  {item.description?.slice(0, 100)}...
+                </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-lg font-bold text-green-600">
+                    {item.price} EGP
+                  </span>
                   <div className="flex gap-2">
-                    <Button
+                    <button
                       onClick={() => handleAddToCart(item._id)}
                       disabled={loadingProduct === item._id}
-                      variant="outline"
-                      className={`flex items-center gap-2 ${loadingProduct === item._id ? 'bg-gray-400 cursor-not-allowed' : ''}`}
+                      className={`px-4 py-2 rounded ${
+                        loadingProduct === item._id
+                          ? "bg-gray-400"
+                          : "bg-green-500 hover:bg-green-600"
+                      } text-white transition-colors`}
                     >
-                      {loadingProduct === item._id ? "جاري الإضافة..." : "Add to Cart"}
-                    </Button>
-                    <Button 
-                      onClick={() => removeFromWishlist(item._id)} 
-                      variant="outline"
-                      className="flex items-center gap-2"
+                      {loadingProduct === item._id
+                        ? "Adding..."
+                        : "Add to Cart"}
+                    </button>
+                    <button
+                      onClick={() => removeFromWishlist(item._id)}
+                      className="px-4 py-2 rounded bg-red-500 hover:bg-red-600 text-white transition-colors"
                     >
-                      <Trash className="w-5 h-5 text-red-500" />
-                      Remove
-                    </Button>
+                      <Trash className="w-5 h-5" />
+                    </button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-4">
+        <div className="flex flex-col items-center justify-center min-h-[400px]">
           <Heart className="w-16 h-16 text-gray-400 mb-4" />
-          <h2 className="text-2xl font-semibold mb-2">قائمة الأمنيات فارغة</h2>
-          <p className="text-gray-500">ابدأ بإضافة المنتجات المفضلة لديك هنا.</p>
+          <h2 className="text-2xl font-semibold mb-2">
+            Your wishlist is empty
+          </h2>
+          <p className="text-gray-500">
+            Start adding some items to your wishlist!
+          </p>
         </div>
       )}
     </div>
