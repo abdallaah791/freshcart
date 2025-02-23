@@ -65,7 +65,7 @@ export default function RecentProducts() {
           All Products
         </h2>
 
-        {/* ✅✅ مستطيل البحث ✅✅ */}
+       
         <div className="flex justify-center mb-6">
           <input
             type="text"

@@ -6,7 +6,7 @@ import axios from "axios";
 
 export default function Cart() {
   let { cart, getProductsCart, handleDeleteProduct } = useContext(CartContext);
-  const navigate = useNavigate(); // ⬅️ لإعادة التوجيه بين الصفحات
+  const navigate = useNavigate();
 
   async function updateProductCount(productId, newCount) {
     if (newCount < 1) return;
@@ -21,7 +21,7 @@ export default function Cart() {
         { headers }
       );
 
-      getProductsCart(); // تحديث بيانات السلة بعد التعديل
+      getProductsCart(); 
     } catch (error) {
       console.error("Error updating product count:", error);
     }
@@ -29,6 +29,18 @@ export default function Cart() {
 
   return (
     <>
+
+<div className="flex justify-center mt-6">
+            <button
+              onClick={() => navigate("/checkout")}
+              className=" mb-10   bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition"
+            >
+              Checkout
+            </button>
+          </div>
+
+
+
       {cart && cart.data ? (
         <div>
           <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -77,7 +89,7 @@ export default function Cart() {
                           }
                           className="inline-flex items-center justify-center p-1 me-3 text-sm font-medium h-6 w-6 text-gray-500 bg-white border border-gray-300 rounded-full hover:bg-gray-100"
                         >
-                          {/* علامة الناقص يا ناقص */}
+                       
                           <span className="text-lg font-bold">-</span>
                         </button>
                         <span className="bg-gray-50 w-14 border border-gray-300 text-gray-900 text-sm rounded-lg px-2.5 py-1">
@@ -89,7 +101,7 @@ export default function Cart() {
                           }
                           className="inline-flex items-center justify-center h-6 w-6 p-1 ms-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-full hover:bg-gray-100"
                         >
-                          {/*  علامة الزائد يا ناقص برضوا */}
+                        
                           <span className="text-lg font-bold">+</span>
                         </button>
                       </div>
@@ -99,7 +111,7 @@ export default function Cart() {
                     </td>
                     <td className="px-6 py-4">
                       <button
-                        onClick={() => handleDeleteProduct(item.product._id)} // هنا احنا غيرنا الـ id بـ _id
+                        onClick={() => handleDeleteProduct(item.product._id)} 
                         className="font-medium bg-transparent hover:bg-transparent text-red-600 hover:underline"
                       >
                         Remove
@@ -111,15 +123,8 @@ export default function Cart() {
             </table>
           </div>
 
-          {/* ✅ زر الـ Checkout */}
-          <div className="flex justify-center mt-6">
-            <button
-              onClick={() => navigate("/checkout")}
-              className="bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition"
-            >
-              Checkout
-            </button>
-          </div>
+      
+       
         </div>
       ) : (
         <Loading />

@@ -66,6 +66,12 @@ export default function Navbar() {
                 home
               </NavLink>
               <NavLink
+                to={"cart"}
+                className="text-sm/6 font-semibold text-gray-500"
+              >
+                Cart
+              </NavLink>
+              <NavLink
                 to={"categories"}
                 className="text-sm/6 font-semibold text-gray-500"
               >
@@ -101,9 +107,10 @@ export default function Navbar() {
                 >
                   <i className="fas fa-shopping-cart"></i> {cart.numOfCartItems}{" "}
                 </NavLink>
+                
                 <span
                   onClick={() => logOut()}
-                  className="text-sm/6 text-gray-600"
+                  className="text-sm/6 font-semibold text-gray-500"
                 >
                   Logout{" "}
                 </span>{" "}
@@ -122,13 +129,13 @@ export default function Navbar() {
           </div>
         </nav>
 
-        {/* Mobile menu, show/hide based on menu open state. */}
+        
         <div
           className={isOpen ? "lg:hidden" : "hidden"}
           role="dialog"
           aria-modal="true"
         >
-          {/* Background backdrop, show/hide based on slide-over state. */}
+        
           <div className="fixed inset-0 z-50" />
           <div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
             <div className="flex items-center justify-between">
@@ -166,6 +173,12 @@ export default function Navbar() {
                     className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                   >
                     home
+                  </NavLink>
+                  <NavLink
+                    to={"cart"}
+                    className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+                  >
+                    Cart
                   </NavLink>
                   <NavLink
                     to={"categories"}

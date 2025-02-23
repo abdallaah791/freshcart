@@ -51,7 +51,7 @@ export default function Login() {
         )}
 
         <form onSubmit={formik.handleSubmit} className="space-y-4">
-          {/* حقل البريد الإلكتروني */}
+         
           <div>
             <label className="block text-gray-700">البريد الإلكتروني</label>
             <div className="relative">
@@ -73,7 +73,6 @@ export default function Login() {
             )}
           </div>
 
-          {/* حقل كلمة المرور */}
           <div>
             <label className="block text-gray-700">كلمة المرور</label>
             <div className="relative">
@@ -95,7 +94,6 @@ export default function Login() {
             )}
           </div>
 
-          {/* زر تسجيل الدخول */}
           <button
             type="submit"
             className={`w-full py-2 text-white rounded-lg flex justify-center items-center ${
@@ -107,10 +105,16 @@ export default function Login() {
           </button>
         </form>
 
-        {/* رابط التسجيل */}
         <p className="mt-4 text-center text-gray-600">
-          ليس لديك حساب؟ <a href="/signup" className="text-blue-600 hover:underline">إنشاء حساب جديد</a>
+          ليس لديك حساب؟{" "}
+          <span
+            onClick={() => navigate("/register")}
+            className="cursor-pointer text-blue-600 hover:underline"
+          >
+            إنشاء حساب جديد
+          </span>
         </p>
+
       </div>
     </div>
   );

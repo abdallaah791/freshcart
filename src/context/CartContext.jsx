@@ -18,8 +18,8 @@ export default function CartContextProvider({ children }) {
         { headers }
       );
 
-      setCart(data); //
-      toast.success("تمت إضافة لمنتج إلى السلة ✅");
+      setCart(data);
+      toast.success("تمت إضافة المنتج إلى السلة ✅");
       getProductsCart();
     } catch (err) {
       console.error("Error adding product to cart:", err);
@@ -71,14 +71,19 @@ export default function CartContextProvider({ children }) {
   async function getProductsCart() {
     try {
       const token = localStorage.getItem("userToken");
-      const headers = { token };
+      
+      if (!token) {
+        console.warn("No user token found, skipping cart fetch.");
+        return; 
+      }
 
+      const headers = { token };
       let { data } = await axios.get(
         `https://ecommerce.routemisr.com/api/v1/cart`,
         { headers }
       );
 
-      setCart(data); // تحديث حالة السلة
+      setCart(data);
     } catch (err) {
       console.error("Error fetching cart items:", err);
       toast.error("حدث خطأ أثناء جلب عناصر السلة ❌");
