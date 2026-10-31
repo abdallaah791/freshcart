@@ -111,8 +111,8 @@ button:hover {
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: white;
-    background-color: greenyellow;
+    color: #213547;
+    background-color: #f0f3f2;
   }
 
   a:hover {
@@ -120,6 +120,6 @@ button:hover {
   }
 
   button {
-    background-color: greenyellow;
+    background-color: #0aad0a;
   }
 }
